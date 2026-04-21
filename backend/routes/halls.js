@@ -3,6 +3,12 @@ const router = express.Router();
 const Hall = require('../models/Hall');
 const { requireAdmin } = require('../middleware/auth');
 
+// Solo el ADMIN puede crear salas
+router.post('/', checkRole(['admin']), hallController.create);
+
+// El ADMIN y el CAJERO pueden ver las salas
+router.get('/', checkRole(['admin', 'cajero']), hallController.getAll);
+
 // GET all halls
 router.get('/', async (req, res) => {
   try {
