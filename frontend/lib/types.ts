@@ -28,6 +28,9 @@ export interface Customer {
   _id: string;
   Name: string;
   Surname: string;
+  CI: string;                                     // Añadido
+  Gender: 'Male' | 'Female' | 'Other';            // Añadido
+  Age: number;                                    // Añadido
   Email: string;
   PhoneNumber: string;
   createdAt?: string;
@@ -99,4 +102,10 @@ export interface Review {
   Comment: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface User {
+  _id: string;
+  Username: string;
+  Role: 'admin' | 'cajero' | 'cliente';
 }
