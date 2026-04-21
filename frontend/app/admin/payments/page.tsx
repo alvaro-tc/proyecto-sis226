@@ -50,7 +50,7 @@ export default function PaymentsPage() {
     if (!reservation) return 0;
 
     const storedSeats = localStorage.getItem(`reservation_${reservationId}_seats`);
-    const seatCount = storedSeats ? JSON.parse(storedSeats).length : 1;
+    const seatCount = storedSeats ? JSON.parse(storedSeats).length : reservation.SeatIDs?.length || 1;
     const sessionPrice = typeof reservation.SessionID === 'object' ? reservation.SessionID.Price : 0;
     
     return seatCount * sessionPrice;
@@ -110,8 +110,12 @@ export default function PaymentsPage() {
         
         // Generate tickets
         const storedSeats = localStorage.getItem(`reservation_${data.ReservationID}_seats`);
-        if (storedSeats) {
-          const seatIds = JSON.parse(storedSeats);
+        const reservation = reservations.find((item) => item._id === data.ReservationID);
+        const seatIds = storedSeats
+          ? JSON.parse(storedSeats)
+          : (reservation?.SeatIDs || []).map((seat) => typeof seat === 'object' ? seat._id : seat);
+
+        if (seatIds.length > 0) {
           const QRCode = (await import('qrcode')).default;
 
           for (const seatId of seatIds) {
@@ -346,7 +350,7 @@ export default function PaymentsPage() {
                   .filter((r) => r.Status === 'CREATED' || r.Status === 'PAID')
                   .map((reservation) => {
                     const storedSeats = localStorage.getItem(`reservation_${reservation._id}_seats`);
-                    const seatCount = storedSeats ? JSON.parse(storedSeats).length : 1;
+                    const seatCount = storedSeats ? JSON.parse(storedSeats).length : reservation.SeatIDs?.length || 1;
                     const sessionPrice = typeof reservation.SessionID === 'object' ? reservation.SessionID.Price : 0;
 
                     return (
@@ -459,4 +463,3 @@ export default function PaymentsPage() {
     </div>
   );
 }
-

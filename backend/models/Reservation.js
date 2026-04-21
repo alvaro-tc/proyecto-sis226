@@ -11,6 +11,10 @@ const reservationSchema = new mongoose.Schema({
     ref: 'MovieSession',
     required: true
   },
+  SeatIDs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Seat'
+  }],
   CreationTime: {
     type: Date,
     default: Date.now
@@ -25,4 +29,3 @@ const reservationSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Reservation', reservationSchema);
-

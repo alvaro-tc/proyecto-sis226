@@ -1,10 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import AdminNavigation from '@/components/AdminNavigation';
-import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
+import { clearSession, getStoredSession, getUserDisplayName, subscribeToAuthChanges } from '@/lib/auth';
 
 export default function AdminLayout({
   children,
@@ -14,29 +15,31 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const syncUser = () => {
+      const session = getStoredSession();
+      setUsername(getUserDisplayName(session?.user || null));
+    };
+
+    syncUser();
+    return subscribeToAuthChanges(syncUser);
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_username');
+    clearSession();
     toast.success('Sesión cerrada correctamente');
     router.push('/admin/login');
   };
 
-  // If it's login page, don't wrap with protection
   if (isLoginPage) {
-    return (
-      <div data-admin-panel>
-        {children}
-        <Toaster position="top-right" />
-      </div>
-    );
+    return <div data-admin-panel>{children}</div>;
   }
 
-  // Protected admin pages
   return (
     <AdminProtectedRoute>
       <div className="min-h-screen bg-gray-50" data-admin-panel>
-        {/* Admin Header */}
         <header className="bg-white shadow-md border-b border-gray-200">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16">
@@ -49,7 +52,7 @@ export default function AdminLayout({
 
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">
-                  Bienvenido, <strong>{typeof window !== 'undefined' && localStorage.getItem('admin_username')}</strong>
+                  Bienvenido, <strong>{username}</strong>
                 </span>
                 <button
                   onClick={handleLogout}
@@ -65,17 +68,10 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* Admin Navigation Tabs */}
         <AdminNavigation />
 
-        {/* Admin Content */}
-        <main>
-          {children}
-        </main>
-        
-        <Toaster position="top-right" />
+        <main>{children}</main>
       </div>
     </AdminProtectedRoute>
   );
 }
-

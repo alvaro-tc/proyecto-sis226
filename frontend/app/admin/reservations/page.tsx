@@ -149,7 +149,7 @@ export default function ReservationsPage() {
       // Crear reserva con los asientos seleccionados guardados
       const reservationData = {
         ...formData,
-        selectedSeats: selectedSeats, // Guardar asientos seleccionados para generar tickets después
+        SeatIDs: selectedSeats,
       };
 
       const reservationRes = await reservationsApi.create(reservationData);
@@ -571,4 +571,3 @@ export default function ReservationsPage() {
     </div>
   );
 }
-

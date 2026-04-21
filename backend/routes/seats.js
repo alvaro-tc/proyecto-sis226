@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Seat = require('../models/Seat');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET all seats (optionally filter by hall)
 router.get('/', async (req, res) => {
@@ -30,7 +31,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new seat
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const seat = new Seat(req.body);
     await seat.save();
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update seat
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const seat = await Seat.findByIdAndUpdate(
       req.params.id,
@@ -59,7 +60,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE seat
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const seat = await Seat.findByIdAndDelete(req.params.id);
     if (!seat) {
@@ -72,4 +73,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

@@ -16,6 +16,8 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Import routes
+const authRouter = require('./routes/auth');
+const meRouter = require('./routes/me');
 const moviesRouter = require('./routes/movies');
 const sessionsRouter = require('./routes/sessions');
 const reservationsRouter = require('./routes/reservations');
@@ -24,8 +26,11 @@ const hallsRouter = require('./routes/halls');
 const seatsRouter = require('./routes/seats');
 const paymentsRouter = require('./routes/payments');
 const ticketsRouter = require('./routes/tickets');
+const reviewsRouter = require('./routes/reviews');
 
 // Use routes
+app.use('/api/auth', authRouter);
+app.use('/api/me', meRouter);
 app.use('/api/movies', moviesRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/reservations', reservationsRouter);
@@ -34,6 +39,7 @@ app.use('/api/halls', hallsRouter);
 app.use('/api/seats', seatsRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/tickets', ticketsRouter);
+app.use('/api/reviews', reviewsRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -54,4 +60,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

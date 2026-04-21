@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAuthToken } from './auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -8,6 +9,34 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export const authApi = {
+  login: (data: { identity: string; password: string }) => api.post('/auth/login', data),
+  registerCustomer: (data: {
+    Name: string;
+    Surname: string;
+    Email: string;
+    PhoneNumber: string;
+    Password: string;
+  }) => api.post('/auth/register/customer', data),
+  me: () => api.get('/auth/me'),
+  updateProfile: (data: {
+    Name?: string;
+    Surname?: string;
+    Email?: string;
+    PhoneNumber?: string;
+  }) => api.patch('/auth/me/profile', data),
+};
 
 // Movies API
 export const moviesApi = {
@@ -22,6 +51,7 @@ export const moviesApi = {
 export const sessionsApi = {
   getAll: () => api.get('/sessions'),
   getById: (id: string) => api.get(`/sessions/${id}`),
+  getAvailability: (id: string) => api.get(`/sessions/${id}/availability`),
   create: (data: any) => api.post('/sessions', data),
   update: (id: string, data: any) => api.put(`/sessions/${id}`, data),
   delete: (id: string) => api.delete(`/sessions/${id}`),
@@ -81,5 +111,23 @@ export const ticketsApi = {
   delete: (id: string) => api.delete(`/tickets/${id}`),
 };
 
-export default api;
+export const meApi = {
+  getProfile: () => api.get('/me/profile'),
+  getReservations: () => api.get('/me/reservations'),
+  getReservationById: (id: string) => api.get(`/me/reservations/${id}`),
+  createReservation: (data: { SessionID: string; SeatIDs: string[] }) => api.post('/me/reservations', data),
+  payReservation: (id: string, data: { PaymentMethod: 'Credit Card' | 'Debit Card' | 'Cash' | 'Online' }) =>
+    api.post(`/me/reservations/${id}/pay`, data),
+  getReservationTickets: (id: string) => api.get(`/me/reservations/${id}/tickets`),
+  getTickets: () => api.get('/me/tickets'),
+  getTicketById: (id: string) => api.get(`/me/tickets/${id}`),
+};
 
+export const reviewsApi = {
+  getMovieReviews: (movieId: string) => api.get(`/reviews/movie/${movieId}`),
+  getMyMovieStatus: (movieId: string) => api.get(`/reviews/me/movie/${movieId}`),
+  saveMovieReview: (movieId: string, data: { Score: number; Comment: string }) =>
+    api.put(`/reviews/movie/${movieId}`, data),
+};
+
+export default api;

@@ -5,6 +5,8 @@ const MovieSession = require('../models/MovieSession');
 const Reservation = require('../models/Reservation');
 const Payment = require('../models/Payment');
 const Ticket = require('../models/Ticket');
+const Review = require('../models/Review');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET all movies
 router.get('/', async (req, res) => {
@@ -30,7 +32,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new movie
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const movie = new Movie(req.body);
     await movie.save();
@@ -41,7 +43,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update movie
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const movie = await Movie.findByIdAndUpdate(
       req.params.id,
@@ -58,7 +60,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE movie
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
     if (!movie) {
@@ -85,6 +87,9 @@ router.delete('/:id', async (req, res) => {
     // Delete all sessions
     const sessionResult = await MovieSession.deleteMany({ MovieID: req.params.id });
 
+    // Delete movie reviews
+    const reviewResult = await Review.deleteMany({ MovieID: req.params.id });
+
     // Finally, delete the movie
     await Movie.findByIdAndDelete(req.params.id);
 
@@ -95,7 +100,8 @@ router.delete('/:id', async (req, res) => {
         sessions: sessionResult.deletedCount,
         reservations: reservationResult.deletedCount,
         payments: paymentResult.deletedCount,
-        tickets: ticketResult.deletedCount
+        tickets: ticketResult.deletedCount,
+        reviews: reviewResult.deletedCount
       }
     });
   } catch (error) {
@@ -104,4 +110,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

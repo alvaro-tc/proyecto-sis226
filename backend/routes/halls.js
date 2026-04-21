@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Hall = require('../models/Hall');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET all halls
 router.get('/', async (req, res) => {
@@ -26,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new hall
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const hall = new Hall(req.body);
     await hall.save();
@@ -37,7 +38,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update hall
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const hall = await Hall.findByIdAndUpdate(
       req.params.id,
@@ -54,7 +55,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE hall
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const hall = await Hall.findByIdAndDelete(req.params.id);
     if (!hall) {
@@ -67,4 +68,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

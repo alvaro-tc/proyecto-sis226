@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Payment = require('../models/Payment');
+const { requireAuth, requireAdmin, isOwnerOrAdmin } = require('../middleware/auth');
 
 // GET all payments
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const payments = await Payment.find()
       .populate({
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET single payment
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id)
       .populate({
@@ -34,6 +35,9 @@ router.get('/:id', async (req, res) => {
     if (!payment) {
       return res.status(404).json({ error: 'Payment not found' });
     }
+    if (!payment.ReservationID || !payment.ReservationID.CustomerID || !isOwnerOrAdmin(payment.ReservationID.CustomerID._id, req)) {
+      return res.status(403).json({ error: 'You do not have permission to view this payment' });
+    }
     res.json(payment);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,7 +45,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new payment
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const payment = new Payment(req.body);
     await payment.save();
@@ -60,7 +64,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update payment
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const payment = await Payment.findByIdAndUpdate(
       req.params.id,
@@ -77,7 +81,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE payment
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const payment = await Payment.findByIdAndDelete(req.params.id);
     if (!payment) {
@@ -90,4 +94,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

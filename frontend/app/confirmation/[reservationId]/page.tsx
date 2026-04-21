@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { reservationsApi, ticketsApi } from '@/lib/api';
+import { meApi, reservationsApi } from '@/lib/api';
 import { Reservation, Ticket } from '@/lib/types';
 import TicketDisplay from '@/components/TicketDisplay';
 import PublicNavigation from '@/components/PublicNavigation';
@@ -27,19 +27,11 @@ export default function ConfirmationPage() {
       setLoading(true);
       const [reservationRes, ticketsRes] = await Promise.all([
         reservationsApi.getById(reservationId),
-        ticketsApi.getAll()
+        meApi.getReservationTickets(reservationId),
       ]);
 
       setReservation(reservationRes.data);
-      
-      const reservationTickets = ticketsRes.data.filter((ticket: Ticket) => {
-        const ticketResId = typeof ticket.ReservationID === 'object' 
-          ? ticket.ReservationID._id 
-          : ticket.ReservationID;
-        return ticketResId === reservationId;
-      });
-
-      setTickets(reservationTickets);
+      setTickets(ticketsRes.data);
     } catch (error) {
       console.error('Failed to fetch confirmation data:', error);
     } finally {
@@ -90,39 +82,25 @@ export default function ConfirmationPage() {
       <PublicNavigation />
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-12">
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Success Header - Cinema Style */}
           <div className="text-center mb-12">
-            {/* Animated Success Icon */}
             <div className="mb-8 relative inline-block">
               <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 blur-3xl opacity-50 animate-pulse"></div>
-              <div className="relative w-32 h-32 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-green-500/50 animate-bounce">
+              <div className="relative w-32 h-32 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-green-500/50">
                 <svg className="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
             </div>
 
-            <div className="mb-6">
-              <div className="inline-block relative mb-4">
-                <div className="absolute -inset-4 bg-gradient-to-r from-green-600 via-yellow-500 to-green-600 blur-2xl opacity-50 animate-pulse"></div>
-                <h1 className="relative text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 via-yellow-400 to-green-500 tracking-wider">
-                  ¡RESERVA CONFIRMADA!
-                </h1>
-              </div>
-            </div>
-
-            <p className="text-2xl text-gray-300 font-bold mb-4">
-              ¡Tus entradas están listas!
-            </p>
-            <p className="text-gray-400 text-lg">
-              Muestra el código QR en la entrada para obtener tus entradas
-            </p>
+            <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 via-yellow-400 to-green-500 tracking-wider mb-4">
+              ¡RESERVA CONFIRMADA!
+            </h1>
+            <p className="text-2xl text-gray-300 font-bold mb-2">Tus entradas ya están listas.</p>
+            <p className="text-gray-400 text-lg">Muéstralas en el cine o descárgalas desde tu cuenta cuando quieras.</p>
           </div>
 
-          {/* Movie Info Banner - Cinema Style */}
           {moviePoster && (
             <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-yellow-500 p-8 mb-12 overflow-hidden">
-              {/* Film strip decoration */}
               <div className="absolute top-0 left-0 right-0 h-3 bg-yellow-500 flex gap-1 px-1">
                 {[...Array(30)].map((_, i) => (
                   <div key={i} className="flex-1 bg-black rounded-sm"></div>
@@ -130,53 +108,34 @@ export default function ConfirmationPage() {
               </div>
 
               <div className="flex items-center gap-8 mt-3">
-                <div className="flex-shrink-0">
-                  <div className="relative">
-                    <div className="absolute -inset-3 bg-gradient-to-br from-yellow-600 to-red-600 rounded-2xl opacity-50 blur"></div>
-                    <img
-                      src={moviePoster}
-                      alt={movieName}
-                      className="relative w-40 h-60 object-cover rounded-xl border-4 border-yellow-500 shadow-2xl"
-                    />
-                  </div>
-                </div>
+                <img
+                  src={moviePoster}
+                  alt={movieName}
+                  className="w-40 h-60 object-cover rounded-xl border-4 border-yellow-500 shadow-2xl"
+                />
                 <div className="flex-1">
                   <h2 className="text-4xl font-black text-white mb-4">{movieName}</h2>
-                  <div className="flex items-center gap-4">
-                    <div className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-full font-black text-lg shadow-lg shadow-green-500/50">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      CONFIRMADA
-                    </div>
-                    <div className="text-gray-400 text-lg">
-                      <span className="font-semibold">{tickets.length}</span> {tickets.length === 1 ? 'Entrada' : 'Entradas'}
-                    </div>
+                  <div className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-full font-black text-lg">
+                    CONFIRMADA
+                  </div>
+                  <div className="text-gray-400 text-lg mt-3">
+                    <span className="font-semibold">{tickets.length}</span> {tickets.length === 1 ? 'Entrada' : 'Entradas'}
                   </div>
                 </div>
-              </div>
-
-              {/* Bottom film strip */}
-              <div className="absolute bottom-0 left-0 right-0 h-3 bg-yellow-500 flex gap-1 px-1">
-                {[...Array(30)].map((_, i) => (
-                  <div key={i} className="flex-1 bg-black rounded-sm"></div>
-                ))}
               </div>
             </div>
           )}
 
-          {/* Tickets Display */}
           <div className="mb-12">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-400 mb-2 tracking-wider">
                 TUS ENTRADAS
               </h2>
-              <p className="text-gray-400">Guarda o imprime estas entradas para el ingreso</p>
+              <p className="text-gray-400">También puedes encontrarlas después en tu cuenta</p>
             </div>
 
             {tickets.length === 0 ? (
               <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-red-600 p-12 text-center">
-                <div className="text-6xl mb-4">🎟️</div>
                 <p className="text-gray-400 text-lg">Aún no se han generado entradas</p>
               </div>
             ) : (
@@ -188,46 +147,17 @@ export default function ConfirmationPage() {
             )}
           </div>
 
-          {/* Action Buttons - Cinema Style */}
           <div className="flex flex-wrap justify-center gap-6">
-            <Link href="/">
-              <button className="px-10 py-4 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white font-black text-lg rounded-xl border-4 border-gray-700 hover:border-yellow-500 transition-all duration-300 shadow-lg transform hover:scale-105 tracking-wider">
-                ← VOLVER AL INICIO
+            <Link href="/account">
+              <button className="px-10 py-4 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white font-black text-lg rounded-xl border-4 border-gray-700 hover:border-yellow-500 transition-all duration-300">
+                IR A MI CUENTA
               </button>
             </Link>
             <Link href="/movies">
-              <button className="px-10 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black text-lg rounded-xl transition-all duration-300 shadow-2xl shadow-red-500/50 transform hover:scale-105 tracking-wider">
+              <button className="px-10 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black text-lg rounded-xl transition-all duration-300 shadow-2xl shadow-red-500/50">
                 RESERVAR MÁS ENTRADAS
               </button>
             </Link>
-          </div>
-
-          {/* Important Notice - Cinema Style */}
-          <div className="mt-12 bg-gradient-to-r from-yellow-500/10 to-red-500/10 border-4 border-yellow-500/30 rounded-2xl p-8">
-            <h3 className="text-2xl font-black text-yellow-400 mb-4 flex items-center gap-3">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              INFORMACIÓN IMPORTANTE
-            </h3>
-            <ul className="space-y-3 text-gray-300">
-              <li className="flex items-start gap-3">
-                <span className="text-yellow-400 mt-1">•</span>
-                <span>Por favor llega al menos <strong className="text-white">15 minutos antes</strong> de la función</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-yellow-400 mt-1">•</span>
-                <span>Muestra tu código QR en la entrada para un ingreso rápido</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-yellow-400 mt-1">•</span>
-                <span>Puede que no se permita el ingreso después de que comience la película</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-yellow-400 mt-1">•</span>
-                <span>Mantén tus entradas seguras y no compartas los códigos QR</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

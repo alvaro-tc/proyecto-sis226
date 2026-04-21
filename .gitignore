@@ -37,3 +37,11 @@ coverage/
 # Misc
 *.pem
 .vercel
+
+# Claude
+.claude/
+CLAUDE.md
+
+# Documentation
+casos de uso.md
+Historia de usuarios.xlsx

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { moviesApi } from '@/lib/api';
+import { getStoredSession } from '@/lib/auth';
 import { Movie } from '@/lib/types';
 import MovieCard from '@/components/MovieCard';
 import PublicNavigation from '@/components/PublicNavigation';
@@ -14,9 +15,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if already logged in admin, redirect to admin dashboard
-    const token = localStorage.getItem('admin_token');
-    if (token === 'authenticated') {
+    const session = getStoredSession();
+    if (session?.user.Role === 'ADMIN') {
       router.push('/admin');
       return;
     }

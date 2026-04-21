@@ -9,6 +9,8 @@ export interface Movie {
   Director: string;
   Cast: string[];
   Rating: number;
+  UserRatingAverage?: number;
+  UserRatingCount?: number;
   TrailerURL?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -59,6 +61,7 @@ export interface Reservation {
   _id: string;
   CustomerID: string | Customer;
   SessionID: string | MovieSession;
+  SeatIDs?: Array<string | Seat>;
   CreationTime: string;
   Status: 'CREATED' | 'PAID' | 'CANCELLED';
   createdAt?: string;
@@ -87,3 +90,13 @@ export interface Ticket {
   updatedAt?: string;
 }
 
+export interface Review {
+  _id: string;
+  CustomerID: string | Customer;
+  MovieID: string | Movie;
+  ReservationID: string | Reservation;
+  Score: number;
+  Comment: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

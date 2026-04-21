@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const Customer = require('./models/Customer');
@@ -9,6 +10,10 @@ const MovieSession = require('./models/MovieSession');
 const Reservation = require('./models/Reservation');
 const Payment = require('./models/Payment');
 const Ticket = require('./models/Ticket');
+const User = require('./models/User');
+const Review = require('./models/Review');
+const { refreshMovieReviewStats } = require('./utils/movieRatings');
+const { generateTicketCode } = require('./utils/tickets');
 
 const seedDatabase = async () => {
   try {
@@ -25,6 +30,8 @@ const seedDatabase = async () => {
     await Reservation.deleteMany({});
     await Payment.deleteMany({});
     await Ticket.deleteMany({});
+    await Review.deleteMany({});
+    await User.deleteMany({});
     console.log('Cleared existing data');
 
     // INSERT CUSTOMERS (3 records)
@@ -49,6 +56,39 @@ const seedDatabase = async () => {
       }
     ]);
     console.log('Seeded customers:', customers.length);
+
+    const customerPasswordHash = await bcrypt.hash('demo123', 10);
+
+    await User.insertMany([
+      {
+        Username: 'ahmet',
+        Email: customers[0].Email,
+        PasswordHash: customerPasswordHash,
+        Role: 'CUSTOMER',
+        CustomerID: customers[0]._id
+      },
+      {
+        Username: 'ayse',
+        Email: customers[1].Email,
+        PasswordHash: customerPasswordHash,
+        Role: 'CUSTOMER',
+        CustomerID: customers[1]._id
+      },
+      {
+        Username: 'mehmet',
+        Email: customers[2].Email,
+        PasswordHash: customerPasswordHash,
+        Role: 'CUSTOMER',
+        CustomerID: customers[2]._id
+      },
+      {
+        Username: 'demo',
+        Email: 'admin@cinebook.local',
+        PasswordHash: await bcrypt.hash('demo', 10),
+        Role: 'ADMIN'
+      }
+    ]);
+    console.log('Seeded users: 4');
 
     // INSERT MOVIES (3 records with poster URLs and details)
     const movies = await Movie.insertMany([
@@ -168,6 +208,13 @@ const seedDatabase = async () => {
     const seats = await Seat.insertMany(seatsToInsert);
     console.log('Seeded seats:', seats.length);
 
+    const getSeatByPosition = (hallId, rowNumber, seatNumber) =>
+      seats.find((seat) =>
+        seat.HallID.toString() === hallId.toString() &&
+        seat.RowNumber === rowNumber &&
+        seat.SeatNumber === seatNumber
+      );
+
     // INSERT SESSIONS (4 records)
     const sessions = await MovieSession.insertMany([
       {
@@ -210,24 +257,31 @@ const seedDatabase = async () => {
       {
         CustomerID: customers[0]._id, // Ahmet
         SessionID: sessions[0]._id, // Inception - Hall A
+        SeatIDs: [getSeatByPosition(halls[0]._id, 'A', 1)._id],
         CreationTime: new Date('2025-12-15T10:30:00'),
         Status: 'PAID'
       },
       {
         CustomerID: customers[1]._id, // Ayse
         SessionID: sessions[1]._id, // The Dark Knight - Hall B
+        SeatIDs: [
+          getSeatByPosition(halls[1]._id, 'A', 1)._id,
+          getSeatByPosition(halls[1]._id, 'A', 2)._id
+        ],
         CreationTime: new Date('2025-12-16T14:20:00'),
         Status: 'PAID'
       },
       {
         CustomerID: customers[2]._id, // Mehmet
         SessionID: sessions[2]._id, // Interstellar - Hall A
+        SeatIDs: [getSeatByPosition(halls[0]._id, 'B', 5)._id],
         CreationTime: new Date('2025-12-17T09:00:00'),
         Status: 'CREATED'
       },
       {
         CustomerID: customers[0]._id, // Ahmet
         SessionID: sessions[3]._id, // Inception - Hall C
+        SeatIDs: [getSeatByPosition(halls[2]._id, 'A', 1)._id],
         CreationTime: new Date('2025-12-18T11:00:00'),
         Status: 'PAID'
       }
@@ -262,19 +316,12 @@ const seedDatabase = async () => {
 
     // INSERT TICKETS (4 records) with realistic QR codes
     const QRCode = require('qrcode');
-    
-    // Generate unique ticket codes with timestamp and random string
-    const generateTicketCode = () => {
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-      return `TKT-${timestamp}-${random}`;
-    };
 
     // Create tickets with detailed QR code data
     const ticketData = [
       {
         ReservationID: reservations[0]._id,
-        SeatID: seats[0]._id,
+        SeatID: getSeatByPosition(halls[0]._id, 'A', 1)._id,
         CustomerName: customers[0].Name + ' ' + customers[0].Surname,
         MovieName: movies[0].MovieName,
         HallName: halls[0].HallName,
@@ -282,7 +329,7 @@ const seedDatabase = async () => {
       },
       {
         ReservationID: reservations[1]._id,
-        SeatID: seats[3]._id,
+        SeatID: getSeatByPosition(halls[1]._id, 'A', 1)._id,
         CustomerName: customers[1].Name + ' ' + customers[1].Surname,
         MovieName: movies[1].MovieName,
         HallName: halls[1].HallName,
@@ -290,7 +337,7 @@ const seedDatabase = async () => {
       },
       {
         ReservationID: reservations[1]._id,
-        SeatID: seats[4]._id,
+        SeatID: getSeatByPosition(halls[1]._id, 'A', 2)._id,
         CustomerName: customers[1].Name + ' ' + customers[1].Surname,
         MovieName: movies[1].MovieName,
         HallName: halls[1].HallName,
@@ -298,7 +345,7 @@ const seedDatabase = async () => {
       },
       {
         ReservationID: reservations[3]._id,
-        SeatID: seats[5]._id,
+        SeatID: getSeatByPosition(halls[2]._id, 'A', 1)._id,
         CustomerName: customers[0].Name + ' ' + customers[0].Surname,
         MovieName: movies[0].MovieName,
         HallName: halls[2].HallName,
@@ -345,6 +392,27 @@ const seedDatabase = async () => {
     const tickets = await Ticket.insertMany(ticketsToInsert);
     console.log('Seeded tickets:', tickets.length);
 
+    const reviews = await Review.insertMany([
+      {
+        CustomerID: customers[0]._id,
+        MovieID: movies[0]._id,
+        ReservationID: reservations[0]._id,
+        Score: 5,
+        Comment: 'Una experiencia increíble. La volvería a ver sin dudarlo.'
+      },
+      {
+        CustomerID: customers[1]._id,
+        MovieID: movies[1]._id,
+        ReservationID: reservations[1]._id,
+        Score: 4,
+        Comment: 'Muy buena película y el sonido estuvo excelente.'
+      }
+    ]);
+    console.log('Seeded reviews:', reviews.length);
+
+    await refreshMovieReviewStats(movies[0]._id);
+    await refreshMovieReviewStats(movies[1]._id);
+
     console.log('\n✅ Database seeded successfully!');
     console.log('-----------------------------------');
     console.log(`Customers: ${customers.length}`);
@@ -355,6 +423,9 @@ const seedDatabase = async () => {
     console.log(`Reservations: ${reservations.length}`);
     console.log(`Payments: ${payments.length}`);
     console.log(`Tickets: ${tickets.length}`);
+    console.log(`Reviews: ${reviews.length}`);
+    console.log('Admin login: demo / demo');
+    console.log('Customer login example: ahmet@email.com / demo123');
 
     process.exit(0);
   } catch (error) {

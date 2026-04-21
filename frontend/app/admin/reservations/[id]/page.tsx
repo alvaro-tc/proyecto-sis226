@@ -45,6 +45,15 @@ export default function ReservationDetailPage() {
           seatIds.includes(seat._id)
         );
         setSeats(reservationSeats);
+      } else if (reservationRes.data.SeatIDs?.length) {
+        const seatIds = reservationRes.data.SeatIDs.map((seat: Seat | string) =>
+          typeof seat === 'object' ? seat._id : seat
+        );
+        const allSeatsRes = await seatsApi.getAll();
+        const reservationSeats = allSeatsRes.data.filter((seat: Seat) => 
+          seatIds.includes(seat._id)
+        );
+        setSeats(reservationSeats);
       } else {
         // If not in localStorage, get seats from tickets
         const seatIds = reservationTickets.map((ticket: Ticket) => 
@@ -378,4 +387,3 @@ export default function ReservationDetailPage() {
     </div>
   );
 }
-

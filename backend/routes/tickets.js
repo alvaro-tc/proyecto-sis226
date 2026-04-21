@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Ticket = require('../models/Ticket');
+const { requireAuth, requireAdmin, isOwnerOrAdmin } = require('../middleware/auth');
 
 // GET all tickets
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const tickets = await Ticket.find()
       .populate({
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET single ticket
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id)
       .populate({
@@ -42,6 +43,9 @@ router.get('/:id', async (req, res) => {
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
+    if (!ticket.ReservationID || !ticket.ReservationID.CustomerID || !isOwnerOrAdmin(ticket.ReservationID.CustomerID._id, req)) {
+      return res.status(403).json({ error: 'You do not have permission to view this ticket' });
+    }
     res.json(ticket);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -49,7 +53,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new ticket
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const ticket = new Ticket(req.body);
     await ticket.save();
@@ -72,7 +76,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update ticket (mainly for check-in status)
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const ticket = await Ticket.findByIdAndUpdate(
       req.params.id,
@@ -91,7 +95,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE ticket
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const ticket = await Ticket.findByIdAndDelete(req.params.id);
     if (!ticket) {
@@ -104,4 +108,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

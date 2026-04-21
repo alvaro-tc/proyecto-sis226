@@ -46,6 +46,17 @@ const movieSchema = new mongoose.Schema({
     min: 0,
     max: 10
   },
+  UserRatingAverage: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5
+  },
+  UserRatingCount: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   TrailerURL: {
     type: String,
     trim: true
@@ -55,4 +66,3 @@ const movieSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Movie', movieSchema);
-

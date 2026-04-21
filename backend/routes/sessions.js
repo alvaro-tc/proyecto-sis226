@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const MovieSession = require('../models/MovieSession');
+const Reservation = require('../models/Reservation');
+const Ticket = require('../models/Ticket');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET all sessions with populated movie and hall data
 router.get('/', async (req, res) => {
@@ -30,8 +33,27 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// GET session seat availability
+router.get('/:id/availability', async (req, res) => {
+  try {
+    const session = await MovieSession.findById(req.params.id);
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const reservations = await Reservation.find({ SessionID: req.params.id }).select('_id');
+    const reservationIds = reservations.map((reservation) => reservation._id);
+    const tickets = await Ticket.find({ ReservationID: { $in: reservationIds } }).select('SeatID');
+    const soldSeatIds = tickets.map((ticket) => ticket.SeatID.toString());
+
+    res.json({ soldSeatIds });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST create new session
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const session = new MovieSession(req.body);
     await session.save();
@@ -45,7 +67,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update session
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const session = await MovieSession.findByIdAndUpdate(
       req.params.id,
@@ -62,7 +84,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE session
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const session = await MovieSession.findByIdAndDelete(req.params.id);
     if (!session) {
@@ -75,4 +97,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
