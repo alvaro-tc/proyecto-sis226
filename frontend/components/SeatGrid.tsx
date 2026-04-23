@@ -35,25 +35,25 @@ export default function SeatGrid({
     const seatId = seat._id;
     
     if (reservedSeats.includes(seatId)) {
-      return 'bg-red-500 cursor-not-allowed';
+      return 'bg-red-500/70 border-red-400/60 text-red-100 cursor-not-allowed';
     }
     
     if (selectedSeats.includes(seatId)) {
-      return 'bg-green-500 hover:bg-green-600 cursor-pointer';
+      return 'bg-emerald-500 border-emerald-300 text-white hover:bg-emerald-400 cursor-pointer';
     }
     
     // Color by view quality
     switch (seat.ScreenViewInfo) {
       case 'Excellent':
-        return 'bg-blue-500 hover:bg-blue-600 cursor-pointer';
+        return 'bg-sky-500/90 border-sky-300/80 text-white hover:bg-sky-400 cursor-pointer';
       case 'Good':
-        return 'bg-blue-400 hover:bg-blue-500 cursor-pointer';
+        return 'bg-sky-400/90 border-sky-200/70 text-white hover:bg-sky-300 cursor-pointer';
       case 'Average':
-        return 'bg-blue-300 hover:bg-blue-400 cursor-pointer';
+        return 'bg-indigo-400/80 border-indigo-200/70 text-white hover:bg-indigo-300 cursor-pointer';
       case 'Poor':
-        return 'bg-gray-400 hover:bg-gray-500 cursor-pointer';
+        return 'bg-gray-500/80 border-gray-300/50 text-white hover:bg-gray-400 cursor-pointer';
       default:
-        return 'bg-gray-300 hover:bg-gray-400 cursor-pointer';
+        return 'bg-gray-400/80 border-gray-200/50 text-white hover:bg-gray-300 cursor-pointer';
     }
   };
 
@@ -64,23 +64,20 @@ export default function SeatGrid({
 
   return (
     <div className="w-full">
-      {/* Screen */}
       <div className="mb-8">
-        <div className="bg-gray-800 text-white text-center py-3 rounded-t-3xl mx-auto max-w-2xl">
+        <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white text-center py-3 rounded-t-3xl mx-auto max-w-2xl border border-gray-600 shadow-lg">
           PANTALLA
         </div>
+        <div className="h-8 mx-auto max-w-2xl bg-gradient-to-b from-white/10 to-transparent rounded-b-[2rem] blur-[1px]"></div>
       </div>
 
-      {/* Seats */}
-      <div className="space-y-2">
+      <div className="space-y-2 bg-black/20 border border-gray-800 rounded-2xl p-4 md:p-6">
         {sortedRows.map((row) => {
           const rowSeats = seatsByRow[row].sort((a, b) => a.SeatNumber - b.SeatNumber);
           return (
             <div key={row} className="flex items-center justify-center gap-2">
-              {/* Row Label */}
-              <div className="w-8 text-center font-bold text-gray-700">{row}</div>
+              <div className="w-8 text-center font-bold text-gray-400">{row}</div>
               
-              {/* Seats in Row */}
               <div className="flex gap-1">
                 {rowSeats.map((seat) => {
                   const isReserved = reservedSeats.includes(seat._id);
@@ -94,7 +91,7 @@ export default function SeatGrid({
                       onMouseLeave={() => onSeatHover && onSeatHover(null)}
                       disabled={readOnly || isReserved}
                       className={`
-                        w-10 h-10 rounded-md text-white text-xs font-semibold
+                        w-9 h-9 md:w-10 md:h-10 rounded-lg border text-xs font-semibold
                         transition-all duration-200 transform hover:scale-105
                         ${getSeatColor(seat)}
                         ${isReserved ? 'opacity-50' : ''}
@@ -111,30 +108,29 @@ export default function SeatGrid({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+      <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-blue-500 rounded"></div>
+          <div className="w-5 h-5 bg-sky-500 rounded border border-sky-300/80"></div>
           <span>Vista Excelente</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-blue-400 rounded"></div>
+          <div className="w-5 h-5 bg-sky-400 rounded border border-sky-200/70"></div>
           <span>Vista Buena</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-blue-300 rounded"></div>
+          <div className="w-5 h-5 bg-indigo-400 rounded border border-indigo-200/70"></div>
           <span>Vista Regular</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gray-400 rounded"></div>
+          <div className="w-5 h-5 bg-gray-500 rounded border border-gray-300/50"></div>
           <span>Vista Deficiente</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-green-500 rounded"></div>
+          <div className="w-5 h-5 bg-emerald-500 rounded border border-emerald-300"></div>
           <span>Seleccionado</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-red-500 rounded opacity-50"></div>
+          <div className="w-5 h-5 bg-red-500/70 rounded border border-red-400/60 opacity-70"></div>
           <span>Reservado</span>
         </div>
       </div>

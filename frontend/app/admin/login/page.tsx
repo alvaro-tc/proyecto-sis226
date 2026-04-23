@@ -6,18 +6,6 @@ import { authApi } from '@/lib/api';
 import { storeSession } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
-const CAJERO_MOCK_SESSION = {
-  token: 'mock-cajero-token',
-  user: {
-    _id: 'mock-cajero-001',
-    Username: 'cajero',
-    Email: 'cajero@cinebook.local',
-    Role: 'CAJERO' as const,
-    CustomerID: null,
-    Customer: null,
-  },
-};
-
 export default function AdminLoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -33,7 +21,6 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await authApi.login({
         identity: formData.username,
@@ -42,14 +29,14 @@ export default function AdminLoginPage() {
 
       const role = response.data.user.Role;
       if (role !== 'ADMIN' && role !== 'CAJERO') {
-        toast.error('Esta cuenta no tiene permisos de acceso al panel');
+        toast.error('Esta cuenta no tiene acceso al panel');
         setLoading(false);
         return;
       }
 
       storeSession(response.data);
-      toast.success('Inicio de sesión exitoso');
-      router.push(role === 'CAJERO' ? '/admin/reservations' : redirectTo);
+      toast.success('Inicio de sesión exitoso. Bienvenido al panel.');
+      router.push(redirectTo);
     } catch (error: any) {
       const message = error?.response?.data?.error || 'Credenciales inválidas';
       toast.error(message);
@@ -57,14 +44,9 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleCajeroDemo = () => {
-    storeSession(CAJERO_MOCK_SESSION);
-    toast.success('Sesión de cajero iniciada (modo demo)');
-    router.push('/admin/reservations');
+  const fillDemo = (identity: string, password: string) => {
+    setFormData({ username: identity, password });
   };
-
-  const fillAdmin = () => setFormData({ username: 'demo', password: 'demo' });
-  const fillCajero = () => setFormData({ username: 'cajero', password: 'cajero123' });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4">
@@ -120,38 +102,49 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* Demo credentials */}
           <div className="mt-6 space-y-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Acceso rápido (demo)</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Credenciales de demostración</p>
 
             <button
               type="button"
-              onClick={fillAdmin}
-              className="w-full flex items-center justify-between p-3 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors text-left"
+              onClick={() => fillDemo('demo', 'demo')}
+              className="w-full text-left p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
             >
-              <div>
-                <p className="text-sm font-semibold text-indigo-800">Administrador</p>
-                <p className="text-xs text-indigo-600">usuario: <code>demo</code> · contraseña: <code>demo</code></p>
-              </div>
-              <span className="text-indigo-500 text-xs font-medium">Rellenar →</span>
+              <p className="text-xs font-bold text-purple-700 mb-1">Administrador</p>
+              <p className="text-xs text-purple-600">
+                Usuario: <code className="bg-purple-100 px-1 rounded">demo</code>{' '}
+                Contraseña: <code className="bg-purple-100 px-1 rounded">demo</code>
+              </p>
             </button>
 
             <button
               type="button"
-              onClick={handleCajeroDemo}
-              className="w-full flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
+              onClick={() => fillDemo('cajero', 'cajero')}
+              className="w-full text-left p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
             >
-              <div>
-                <p className="text-sm font-semibold text-blue-800">Cajero <span className="text-xs font-normal text-blue-500">(simulado)</span></p>
-                <p className="text-xs text-blue-600">Acceso directo sin backend · solo ventas</p>
-              </div>
-              <span className="text-blue-500 text-xs font-medium">Entrar →</span>
+              <p className="text-xs font-bold text-blue-700 mb-1">Cajero</p>
+              <p className="text-xs text-blue-600">
+                Usuario: <code className="bg-blue-100 px-1 rounded">cajero</code>{' '}
+                Contraseña: <code className="bg-blue-100 px-1 rounded">cajero</code>
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => fillDemo('ahmet@email.com', 'demo123')}
+              className="w-full text-left p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              <p className="text-xs font-bold text-green-700 mb-1">Cliente</p>
+              <p className="text-xs text-green-600">
+                Usuario: <code className="bg-green-100 px-1 rounded">ahmet@email.com</code>{' '}
+                Contraseña: <code className="bg-green-100 px-1 rounded">demo123</code>
+              </p>
             </button>
           </div>
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-6">
-          Sistema de Reserva de Cine © 2024
+          Proyecto SIS 226 2026
         </p>
       </div>
     </div>

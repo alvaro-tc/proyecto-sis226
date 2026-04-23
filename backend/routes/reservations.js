@@ -39,7 +39,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     if (!reservation) {
       return res.status(404).json({ error: 'Reservation not found' });
     }
-    if (!isOwnerOrAdmin(reservation.CustomerID._id, req)) {
+    if (!isOwnerOrAdmin(reservation.CustomerID?._id, req)) {
       return res.status(403).json({ error: 'You do not have permission to view this reservation' });
     }
     res.json(reservation);

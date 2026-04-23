@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { moviesApi } from '@/lib/api';
 import { getStoredSession } from '@/lib/auth';
 import { Movie } from '@/lib/types';
-import MovieCard from '@/components/MovieCard';
 import PublicNavigation from '@/components/PublicNavigation';
 import Link from 'next/link';
 
@@ -20,7 +19,6 @@ export default function Home() {
       router.push('/admin');
       return;
     }
-    
     fetchFeaturedMovies();
   }, [router]);
 
@@ -28,7 +26,6 @@ export default function Home() {
     try {
       setLoading(true);
       const response = await moviesApi.getAll();
-      // Show top 6 movies
       setFeaturedMovies(response.data.slice(0, 6));
     } catch (error) {
       console.error('Failed to fetch movies:', error);
@@ -38,193 +35,218 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <PublicNavigation />
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-        {/* Hero Section - Cinema Marquee Style */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-black via-red-950 to-black text-white border-b-8 border-red-600">
-          {/* Animated spotlight effect */}
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(220,38,38,0.3),transparent_50%)] animate-pulse"></div>
-          </div>
-          
-          {/* Film strip pattern */}
-          <div className="absolute top-0 left-0 right-0 h-4 bg-yellow-500 flex gap-2 px-2">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className="flex-1 bg-black rounded-sm"></div>
-            ))}
-          </div>
-          
-          <div className="relative container mx-auto px-4 py-24 text-center">
-            <div className="mb-8">
-              <div className="inline-block p-6 bg-gradient-to-br from-red-600 to-yellow-600 rounded-full mb-6 shadow-2xl shadow-red-500/50 animate-bounce">
-                <div className="text-7xl">🎬</div>
-              </div>
-            </div>
-            
-            {/* Main Title - Cinema Marquee Style */}
-            <div className="mb-8">
-              <div className="inline-block bg-gradient-to-r from-yellow-500 via-red-500 to-yellow-500 p-1 rounded-2xl shadow-2xl shadow-yellow-500/50">
-                <div className="bg-black px-12 py-6 rounded-xl">
-                  <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 tracking-wider animate-pulse">
-                    CINEBOOK
-                  </h1>
-                  <div className="text-yellow-400 text-xl md:text-2xl font-bold tracking-widest mt-2">
-                    EXPERIENCIA DE CINE PREMIUM
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <p className="text-2xl md:text-3xl text-gray-300 mb-12 max-w-4xl mx-auto font-semibold leading-relaxed">
-              Vive el cine como nunca antes con nuestra
-              <span className="text-red-500 font-black"> revolucionaria tecnología </span>
-              de previsualización de asientos
+      {/* ── Hero ── */}
+      <section className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12">
+          {/* Copy */}
+          <div className="flex-1 text-center md:text-left">
+            <span className="inline-block mb-4 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold tracking-widest uppercase border border-red-100">
+              Reserva online · Sin colas
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+              Tu próxima película<br />
+              <span className="text-red-600">te está esperando</span>
+            </h1>
+            <p className="text-gray-500 text-lg mb-8 max-w-lg mx-auto md:mx-0">
+              Elige tu sala, selecciona tu asiento y compra tu entrada en segundos. Cine sin complicaciones.
             </p>
-            
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <Link
                 href="/movies"
-                className="group relative px-10 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black text-xl rounded-xl shadow-2xl shadow-red-500/50 transition-all transform hover:scale-110 flex items-center gap-3 overflow-hidden"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-100"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <svg className="w-7 h-7 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
                 </svg>
-                <span className="relative z-10">RESERVAR ENTRADAS YA</span>
+                Ver cartelera
               </Link>
               <Link
-                href="#features"
-                className="px-10 py-5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-black text-xl rounded-xl border-4 border-yellow-400 transition-all shadow-2xl shadow-yellow-500/50 transform hover:scale-110"
+                href="/account/register"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-800 text-sm font-bold border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors"
               >
-                EXPLORAR CARACTERÍSTICAS
+                Crear cuenta gratis
               </Link>
             </div>
           </div>
 
-          {/* Bottom film strip */}
-          <div className="absolute bottom-0 left-0 right-0 h-4 bg-yellow-500 flex gap-2 px-2">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className="flex-1 bg-black rounded-sm"></div>
-            ))}
-          </div>
-        </div>
-
-        {/* Now Showing Section - Cinema Hall Style */}
-        <div className="container mx-auto px-4 py-20">
-          {/* Section Header with Cinema Lights */}
-          <div className="text-center mb-16 relative">
-            <div className="inline-block relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 blur-xl opacity-50 animate-pulse"></div>
-              <h2 className="relative text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-500 mb-4 tracking-wider">
-                EN CARTELERA
-              </h2>
-            </div>
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <div className="h-1 w-20 bg-gradient-to-r from-transparent to-red-500"></div>
-              <p className="text-gray-400 text-xl font-bold tracking-widest">
-                ★ PELÍCULAS DESTACADAS ★
-              </p>
-              <div className="h-1 w-20 bg-gradient-to-l from-transparent to-red-500"></div>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="relative">
-                <div className="w-20 h-20 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-3xl">🎬</div>
-                </div>
-              </div>
-            </div>
-          ) : featuredMovies.length === 0 ? (
-            <div className="text-center py-20 bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-gray-800">
-              <div className="text-6xl mb-4">🎬</div>
-              <p className="text-gray-400 text-xl font-semibold">No hay películas disponibles en este momento</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredMovies.map((movie) => (
-                <MovieCard key={movie._id} movie={movie} />
-              ))}
-            </div>
-          )}
-
-          {/* View All Button */}
-          {featuredMovies.length > 0 && (
-            <div className="text-center mt-12">
-              <Link
-                href="/movies"
-                className="inline-flex items-center gap-3 px-12 py-4 bg-gradient-to-r from-gray-800 to-black hover:from-red-600 hover:to-red-700 text-white font-black text-lg rounded-xl border-4 border-red-600 transition-all duration-300 shadow-2xl shadow-red-500/30 transform hover:scale-110"
-              >
-                <span>VER TODAS LAS PELÍCULAS</span>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Features Section - Cinema Style */}
-        <div id="features" className="container mx-auto px-4 py-20 border-t-4 border-red-600">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-500 mb-4">
-              ¿POR QUÉ ELEGIRNOS?
-            </h2>
-            <p className="text-gray-400 text-xl">La mejor experiencia de reserva de cine</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Stats pill row */}
+          <div className="flex-shrink-0 flex flex-col gap-4 md:gap-5 w-full md:w-auto">
             {[
-              {
-                icon: '👀',
-                title: 'PREVISUALIZACIÓN DE PANTALLA',
-                description: 'Ve exactamente cómo se ve la pantalla desde tu asiento antes de reservar'
-              },
-              {
-                icon: '🔊',
-                title: 'PREVISUALIZACIÓN ACÚSTICA',
-                description: 'Experimenta la calidad de sonido para cada posición de asiento'
-              },
-              {
-                icon: '💺',
-                title: 'SELECCIÓN INTELIGENTE',
-                description: 'Recomendaciones de asientos impulsadas por IA según tus preferencias'
-              }
-            ].map((feature, index) => (
+              { label: 'Películas en cartelera', value: '20+', icon: '🎬' },
+              { label: 'Salas disponibles', value: '6', icon: '🏟️' },
+              { label: 'Reservas realizadas', value: '1,200+', icon: '🎟️' },
+            ].map((stat) => (
               <div
-                key={index}
-                className="group bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl border-4 border-gray-800 hover:border-red-600 transition-all duration-300 transform hover:-translate-y-3 hover:shadow-2xl hover:shadow-red-500/50"
+                key={stat.label}
+                className="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 min-w-[220px]"
               >
-                <div className="text-6xl mb-6 transform group-hover:scale-125 transition-transform duration-300">
-                  {feature.icon}
+                <span className="text-2xl">{stat.icon}</span>
+                <div>
+                  <p className="text-xl font-extrabold text-gray-900">{stat.value}</p>
+                  <p className="text-xs text-gray-400 font-medium">{stat.label}</p>
                 </div>
-                <h3 className="text-2xl font-black text-white mb-4 group-hover:text-red-500 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-400 leading-relaxed">
-                  {feature.description}
-                </p>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Footer - Cinema Credits Style */}
-        <footer className="bg-black border-t-4 border-red-600 py-12">
-          <div className="container mx-auto px-4 text-center">
-            <div className="text-6xl mb-4">🎬</div>
-            <p className="text-gray-500 text-sm tracking-widest">
-              © 2025 CINEBOOK - TODOS LOS DERECHOS RESERVADOS
-            </p>
-            <p className="text-gray-600 text-xs mt-2">
-              Vive el Cine. Vive la Vida.
-            </p>
+      {/* ── Features strip ── */}
+      <section className="bg-red-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-white text-center sm:text-left">
+            {[
+              { icon: '🪑', title: 'Elige tu asiento', desc: 'Previsualiza la sala antes de reservar.' },
+              { icon: '⚡', title: 'Reserva en segundos', desc: 'Proceso rápido, seguro y sin filas.' },
+              { icon: '🎟️', title: 'Entradas digitales', desc: 'Recibe tu ticket al instante.' },
+            ].map((f) => (
+              <div key={f.title} className="flex items-start gap-3">
+                <span className="text-2xl mt-0.5">{f.icon}</span>
+                <div>
+                  <p className="font-bold text-sm">{f.title}</p>
+                  <p className="text-red-100 text-xs mt-0.5">{f.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        </footer>
+        </div>
+      </section>
+
+      {/* ── Now Showing ── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900">En cartelera</h2>
+            <p className="text-gray-400 text-sm mt-1">Las mejores películas disponibles ahora</p>
+          </div>
+          <Link
+            href="/movies"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
+          >
+            Ver todas
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        {/* Grid */}
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden bg-gray-200 animate-pulse">
+                <div className="aspect-[2/3]" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-gray-300 rounded w-3/4" />
+                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : featuredMovies.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <svg className="w-12 h-12 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+            </svg>
+            <p className="text-sm font-medium">No hay películas disponibles en este momento</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+            {featuredMovies.map((movie) => (
+              <MovieCard key={movie._id} movie={movie} />
+            ))}
+          </div>
+        )}
+
+        {featuredMovies.length > 0 && (
+          <div className="mt-10 sm:hidden text-center">
+            <Link
+              href="/movies"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
+            >
+              Ver todas las películas
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-red-600 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+              </svg>
+            </div>
+            <span className="text-gray-800 font-bold text-sm">Cine<span className="text-red-600">book</span></span>
+          </div>
+          <p className="text-gray-400 text-xs">Proyecto SIS 226 2026</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function MovieCard({ movie }: { movie: Movie }) {
+  const hasUserRating = Boolean(movie.UserRatingCount && movie.UserRatingCount > 0);
+  const ratingValue = hasUserRating
+    ? movie.UserRatingAverage?.toFixed(1)
+    : (movie.Rating / 2).toFixed(1);
+
+  return (
+    <Link href={`/movies/${movie._id}`} className="group block">
+      <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        {/* Poster */}
+        <div className="relative aspect-[2/3] overflow-hidden bg-gray-100">
+          <img
+            src={movie.PosterURL}
+            alt={movie.MovieName}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = 'https://via.placeholder.com/300x450/f3f4f6/d1d5db?text=Sin+poster';
+            }}
+          />
+          {/* Gradient overlay */}
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
+          {/* Age badge */}
+          <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-gray-900/80 text-white text-xs font-bold backdrop-blur-sm">
+            {movie.AgeLimit}+
+          </div>
+          {/* Rating badge */}
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-900">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span className="text-xs font-bold">{ratingValue}</span>
+          </div>
+          {/* Hover CTA */}
+          <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <span className="block w-full py-2 rounded-lg bg-red-600 text-white text-xs font-bold text-center">
+              Reservar entrada
+            </span>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="p-3.5">
+          <h3 className="text-gray-900 text-sm font-bold mb-1.5 line-clamp-1 group-hover:text-red-600 transition-colors">
+            {movie.MovieName}
+          </h3>
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">{movie.Genre}</span>
+            <span>·</span>
+            <span>{movie.Duration} min</span>
+          </div>
+        </div>
       </div>
-    </>
+    </Link>
   );
 }

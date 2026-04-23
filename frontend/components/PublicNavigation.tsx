@@ -9,20 +9,17 @@ import toast from 'react-hot-toast';
 export default function PublicNavigation() {
   const pathname = usePathname();
   const [session, setSession] = useState(getStoredSession());
-
-  const navItems = [
-    { name: 'INICIO', path: '/', icon: '🏠' },
-    { name: 'PELÍCULAS', path: '/movies', icon: '🎬' },
-  ];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const syncSession = () => {
-      setSession(getStoredSession());
-    };
-
+    const syncSession = () => setSession(getStoredSession());
     syncSession();
     return subscribeToAuthChanges(syncSession);
   }, []);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     clearSession();
@@ -33,96 +30,122 @@ export default function PublicNavigation() {
   const isCustomer = session?.user.Role === 'CUSTOMER';
 
   return (
-    <nav className="bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl sticky top-0 z-50 border-b-4 border-red-600">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="text-4xl transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                🎬
-              </div>
-              <div className="absolute -inset-1 bg-red-600 rounded-full blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+              </svg>
             </div>
-            <div className="flex flex-col">
-              <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-500 tracking-wider">
-                CINEBOOK
-              </span>
-              <span className="text-xs text-yellow-400 tracking-widest font-semibold">EXPERIENCIA DE CINE PREMIUM</span>
-            </div>
+            <span className="text-gray-900 font-bold text-xl tracking-tight">
+              Cine<span className="text-red-600">book</span>
+            </span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`relative flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-black tracking-wider transition-all duration-300 transform hover:scale-105 ${
-                  pathname === item.path
-                    ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/50'
-                    : 'text-gray-300 hover:text-white hover:bg-red-600/20'
-                }`}
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span>{item.name}</span>
-              </Link>
-            ))}
-
-            {isCustomer && (
-              <span className="hidden xl:block text-sm text-gray-400 font-semibold">
-                Hola, <strong className="text-white">{getUserDisplayName(session.user)}</strong>
-              </span>
-            )}
-
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-3">
             {isAdmin ? (
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black rounded-lg text-sm font-black tracking-wider transition-all duration-300 shadow-lg shadow-yellow-500/50 transform hover:scale-105"
-              >
-                <span>PANEL</span>
-              </Link>
+              <>
+                <span className="text-sm text-gray-400 font-medium">Administrador</span>
+                <Link
+                  href="/admin"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+                >
+                  Panel
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-lg text-gray-600 text-sm font-medium hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                >
+                  Salir
+                </button>
+              </>
             ) : isCustomer ? (
-              <Link
-                href="/account"
-                className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg text-sm font-black tracking-wider transition-all duration-300 shadow-lg shadow-red-500/50 transform hover:scale-105"
-              >
-                <span>MI CUENTA</span>
-              </Link>
+              <>
+                <span className="text-sm text-gray-500 font-medium">
+                  Hola, <span className="text-gray-900 font-semibold">{getUserDisplayName(session.user)}</span>
+                </span>
+                <Link
+                  href="/account"
+                  className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 transition-colors"
+                >
+                  Mi cuenta
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-lg text-gray-600 text-sm font-medium hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                >
+                  Salir
+                </button>
+              </>
             ) : (
               <>
                 <Link
                   href="/account/login"
-                  className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg text-sm font-black tracking-wider transition-all duration-300 shadow-lg shadow-red-500/50 transform hover:scale-105"
+                  className="px-4 py-2 rounded-lg text-gray-700 text-sm font-semibold hover:text-gray-900 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 transition-colors"
                 >
-                  <span>INGRESAR</span>
+                  Iniciar sesión
                 </Link>
                 <Link
                   href="/account/register"
-                  className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black rounded-lg text-sm font-black tracking-wider transition-all duration-300 shadow-lg shadow-emerald-500/40 transform hover:scale-105"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
                 >
-                  <span>REGISTRARSE</span>
-                </Link>
-                <Link
-                  href="/admin/login"
-                  className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black rounded-lg text-sm font-black tracking-wider transition-all duration-300 shadow-lg shadow-yellow-500/50 transform hover:scale-105"
-                >
-                  <span>ADMIN</span>
+                  Registrarse
                 </Link>
               </>
             )}
+          </div>
 
-            {session && (
-              <button
-                onClick={handleLogout}
-                className="px-5 py-3 bg-white/5 hover:bg-white/10 text-white rounded-lg text-sm font-black tracking-wider transition-all duration-300 border border-white/10"
-              >
-                CERRAR
-              </button>
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Abrir menú"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-3 border-t border-gray-100 space-y-2">
+            {isAdmin ? (
+              <>
+                <Link href="/admin" className="block px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold text-center">
+                  Panel Admin
+                </Link>
+                <button onClick={handleLogout} className="w-full px-4 py-2.5 rounded-lg text-gray-600 text-sm font-medium border border-gray-200 text-center">
+                  Cerrar sesión
+                </button>
+              </>
+            ) : isCustomer ? (
+              <>
+                <Link href="/account" className="block px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-semibold text-center">
+                  Mi cuenta
+                </Link>
+                <button onClick={handleLogout} className="w-full px-4 py-2.5 rounded-lg text-gray-600 text-sm font-medium border border-gray-200">
+                  Cerrar sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/account/login" className="block px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold text-center">
+                  Iniciar sesión
+                </Link>
+                <Link href="/account/register" className="block px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold text-center">
+                  Registrarse
+                </Link>
+              </>
             )}
           </div>
-        </div>
+        )}
       </div>
-
-      <div className="h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent"></div>
-    </nav>
+    </header>
   );
 }

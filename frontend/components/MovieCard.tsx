@@ -15,60 +15,46 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
   return (
     <Link href={`/movies/${movie._id}`}>
-      <div className="group relative bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl hover:shadow-red-500/50 transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-3 hover:scale-105 border-4 border-gray-800 hover:border-red-600">
-        {/* Film strip perforation effect at top */}
-        <div className="absolute top-0 left-0 right-0 h-3 bg-gray-800 flex gap-2 px-1 z-10">
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="flex-1 bg-black rounded-sm"></div>
-          ))}
-        </div>
+      <div className="group relative bg-gradient-to-b from-gray-900 to-black rounded-2xl shadow-xl hover:shadow-red-500/30 transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-2 border border-gray-800 hover:border-red-500/70">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
-        {/* Poster Image */}
-        <div className="relative h-96 bg-black overflow-hidden mt-3">
+        <div className="relative h-96 bg-black overflow-hidden">
           <img
             src={movie.PosterURL}
             alt={movie.MovieName}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 group-hover:brightness-110"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 group-hover:brightness-110"
             onError={(e) => {
               e.currentTarget.src = 'https://via.placeholder.com/300x450?text=Sin+Poster';
             }}
           />
           
-          {/* Film grain overlay */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] opacity-20 group-hover:opacity-30 transition-opacity"></div>
-          
-          {/* Rating Badge - Cinema Ticket Style */}
-          <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-black px-4 py-2 rounded-lg shadow-lg shadow-yellow-500/50 flex items-center gap-2 transform rotate-3 group-hover:rotate-0 transition-transform">
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+
+          <div className="absolute top-3 right-3 bg-yellow-500 text-black font-black px-3 py-1.5 rounded-lg shadow-lg shadow-yellow-500/30 flex items-center gap-1.5">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <span className="text-lg">{ratingValue}</span>
+            <span className="text-sm">{ratingValue}</span>
           </div>
 
-          {/* Age Limit Badge - Cinema Style */}
-          <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-black px-4 py-2 rounded-lg shadow-lg shadow-red-500/50 border-2 border-red-400 transform -rotate-3 group-hover:rotate-0 transition-transform">
+          <div className="absolute top-3 left-3 bg-red-600 text-white font-black px-3 py-1.5 rounded-lg shadow-lg shadow-red-500/30">
             {movie.AgeLimit}+
           </div>
 
-          {/* Hover Overlay with "NOW SHOWING" */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-end p-6">
-            <div className="text-yellow-400 font-black text-sm tracking-widest mb-3 animate-pulse">
-              ★ EN CARTELERA ★
-            </div>
-            <button className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black py-4 rounded-lg transition-all duration-300 shadow-lg shadow-red-500/50 text-lg tracking-wider transform hover:scale-105">
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <button className="w-full bg-red-600/90 backdrop-blur hover:bg-red-500 text-white font-black py-3 rounded-lg transition-all duration-300 text-sm tracking-wide">
               VER DETALLES Y RESERVAR
             </button>
           </div>
         </div>
 
-        {/* Movie Info - Cinema Style */}
         <div className="p-5 bg-gradient-to-b from-gray-900 to-black">
-          <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-2 line-clamp-1 group-hover:from-red-500 group-hover:to-yellow-400 transition-all duration-300 tracking-wide">
+          <h3 className="text-2xl font-black text-white mb-2 line-clamp-1 group-hover:text-red-400 transition-colors tracking-wide">
             {movie.MovieName}
           </h3>
           
           <div className="flex items-center gap-3 mb-3">
-            <span className="px-3 py-1 bg-red-600/20 text-red-400 text-xs font-bold rounded-full border border-red-600/50 uppercase tracking-wider">
+            <span className="px-3 py-1 bg-red-600/15 text-red-300 text-xs font-bold rounded-full border border-red-500/30 uppercase tracking-wider">
               {movie.Genre}
             </span>
             <span className="flex items-center gap-1 text-gray-400 text-sm font-semibold">
@@ -91,18 +77,6 @@ export default function MovieCard({ movie }: MovieCardProps) {
           <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
             {movie.Description}
           </p>
-        </div>
-
-        {/* Film strip perforation effect at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-3 bg-gray-800 flex gap-2 px-1">
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="flex-1 bg-black rounded-sm"></div>
-          ))}
-        </div>
-
-        {/* Spotlight effect on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-tr from-red-600/10 via-transparent to-yellow-500/10"></div>
         </div>
       </div>
     </Link>

@@ -212,7 +212,8 @@ export default function ReservationsPage() {
     );
   };
 
-  const formatDateTime = (dateTime: string) => {
+  const formatDateTime = (dateTime: string | null | undefined) => {
+    if (!dateTime) return 'Sin fecha';
     const date = new Date(dateTime);
     return date.toLocaleString('es-ES', {
       year: 'numeric',
@@ -223,25 +224,25 @@ export default function ReservationsPage() {
     });
   };
 
-  const getCustomerName = (customer: Customer | string) => {
-    if (typeof customer === 'object') {
+  const getCustomerName = (customer: Customer | string | null | undefined) => {
+    if (customer && typeof customer === 'object' && 'Name' in customer) {
       return `${customer.Name} ${customer.Surname}`;
     }
-    return 'Desconocido';
+    return 'Sin cliente';
   };
 
-  const getMovieName = (session: MovieSession | string) => {
-    if (typeof session === 'object' && typeof session.MovieID === 'object') {
-      return session.MovieID.MovieName;
+  const getMovieName = (session: MovieSession | string | null | undefined) => {
+    if (session && typeof session === 'object' && 'MovieID' in session && session.MovieID && typeof session.MovieID === 'object' && 'MovieName' in session.MovieID) {
+      return (session.MovieID as any).MovieName;
     }
-    return 'Desconocido';
+    return 'Sin película';
   };
 
-  const getSessionDateTime = (session: MovieSession | string) => {
-    if (typeof session === 'object') {
+  const getSessionDateTime = (session: MovieSession | string | null | undefined) => {
+    if (session && typeof session === 'object' && 'SessionDateTime' in session) {
       return formatDateTime(session.SessionDateTime);
     }
-    return 'Desconocido';
+    return 'Sin horario';
   };
 
   return (

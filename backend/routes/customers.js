@@ -1,10 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Customer = require('../models/Customer');
-const { requireAuth, requireAdmin, isOwnerOrAdmin } = require('../middleware/auth');
+const Customer = require("../models/Customer");
+const {
+  requireAuth,
+  requireAdmin,
+  requireAdminOrCajero,
+  isOwnerOrAdmin,
+} = require("../middleware/auth");
 
-// GET all customers
-router.get('/', requireAuth, requireAdmin, async (req, res) => {
+// GET all customers (Admin and Cajero can view
+router.get("/", requireAuth, requireAdminOrCajero, async (req, res) => {
   try {
     const customers = await Customer.find().sort({ createdAt: -1 });
     res.json(customers);
@@ -14,14 +19,16 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // GET single customer
-router.get('/:id', requireAuth, async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
     if (!customer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
     if (!isOwnerOrAdmin(customer._id, req)) {
-      return res.status(403).json({ error: 'You do not have permission to view this customer' });
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to view this customer" });
     }
     res.json(customer);
   } catch (error) {
@@ -29,8 +36,8 @@ router.get('/:id', requireAuth, async (req, res) => {
   }
 });
 
-// POST create new customer
-router.post('/', requireAuth, requireAdmin, async (req, res) => {
+// POST create new customer (Admin and Cajero can create)
+router.post("/", requireAuth, requireAdminOrCajero, async (req, res) => {
   try {
     const customer = new Customer(req.body);
     await customer.save();
@@ -41,20 +48,21 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // PUT update customer
-router.put('/:id', requireAuth, async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   try {
     const existingCustomer = await Customer.findById(req.params.id);
     if (!existingCustomer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
     if (!isOwnerOrAdmin(existingCustomer._id, req)) {
-      return res.status(403).json({ error: 'You do not have permission to update this customer' });
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to update this customer" });
     }
-    const customer = await Customer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const customer = await Customer.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
     res.json(customer);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -62,13 +70,13 @@ router.put('/:id', requireAuth, async (req, res) => {
 });
 
 // DELETE customer
-router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
+router.delete("/:id", requireAuth, requireAdmin, async (req, res) => {
   try {
     const customer = await Customer.findByIdAndDelete(req.params.id);
     if (!customer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
-    res.json({ message: 'Customer deleted successfully', customer });
+    res.json({ message: "Customer deleted successfully", customer });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -199,34 +199,34 @@ export default function BookingPage() {
   return (
     <>
       <PublicNavigation />
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-8">
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-6 md:py-8">
         <div className="container mx-auto px-4">
-          <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-red-600 p-8 mb-8 overflow-hidden">
+          <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-red-600 p-4 md:p-8 mb-6 md:mb-8 overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-3 bg-yellow-500 flex gap-1 px-1">
               {[...Array(30)].map((_, i) => (
                 <div key={i} className="flex-1 bg-black rounded-sm"></div>
               ))}
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-500 mb-6 mt-3 tracking-wider">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-500 mb-4 md:mb-6 mt-3 tracking-wide md:tracking-wider">
               {movieName}
             </h1>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <div className="bg-gray-800/50 rounded-lg px-4 py-3 border border-gray-700">
                 <span className="text-gray-400 text-sm block mb-1">SALA</span>
-                <span className="text-white font-black text-lg">{hallName}</span>
+                <span className="text-white font-black text-base md:text-lg">{hallName}</span>
               </div>
               <div className="bg-gray-800/50 rounded-lg px-4 py-3 border border-gray-700">
                 <span className="text-gray-400 text-sm block mb-1">FECHA</span>
-                <span className="text-yellow-400 font-black text-lg">{new Date(session.SessionDateTime).toLocaleDateString('es-ES')}</span>
+                <span className="text-yellow-400 font-black text-base md:text-lg">{new Date(session.SessionDateTime).toLocaleDateString('es-ES')}</span>
               </div>
               <div className="bg-gray-800/50 rounded-lg px-4 py-3 border border-gray-700">
                 <span className="text-gray-400 text-sm block mb-1">HORA</span>
-                <span className="text-yellow-400 font-black text-lg">{new Date(session.SessionDateTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-yellow-400 font-black text-base md:text-lg">{new Date(session.SessionDateTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
               <div className="bg-gray-800/50 rounded-lg px-4 py-3 border border-gray-700">
                 <span className="text-gray-400 text-sm block mb-1">PRECIO/ASIENTO</span>
-                <span className="text-green-400 font-black text-lg">${session.Price}</span>
+                <span className="text-green-400 font-black text-base md:text-lg">${session.Price}</span>
               </div>
             </div>
 
@@ -238,9 +238,9 @@ export default function BookingPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2 bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-gray-800 p-6">
+            <div className="lg:col-span-2 bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-gray-800 p-4 md:p-6">
               <div className="mb-6">
-                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-400 mb-3 tracking-wider">
+                <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-400 mb-3 tracking-wider">
                   SELECCIONA TUS ASIENTOS
                 </h2>
                 <div className="bg-yellow-500/10 border-2 border-yellow-500/30 rounded-lg p-4">
@@ -259,8 +259,8 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-purple-600 p-6">
-                <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
+              <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-purple-600 p-4 md:p-6">
+                <h3 className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
                   VISTA PREVIA
                 </h3>
                 {hoveredSeat ? (
@@ -284,8 +284,8 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-yellow-500 p-6">
-                <h3 className="text-2xl font-black text-yellow-400 mb-4">RESUMEN DEL PEDIDO</h3>
+              <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-yellow-500 p-4 md:p-6">
+                <h3 className="text-xl md:text-2xl font-black text-yellow-400 mb-4">RESUMEN DEL PEDIDO</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-gray-800">
                     <span className="text-gray-400 font-semibold">Asientos Seleccionados</span>
@@ -297,15 +297,15 @@ export default function BookingPage() {
                   </div>
                   <div className="flex justify-between items-center py-3 bg-gradient-to-r from-yellow-500/20 to-red-500/20 rounded-lg px-4 border-2 border-yellow-500/30">
                     <span className="text-yellow-400 font-black text-lg">TOTAL</span>
-                    <span className="text-yellow-400 font-black text-3xl">${totalPrice.toFixed(2)}</span>
+                    <span className="text-yellow-400 font-black text-2xl md:text-3xl">${totalPrice.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-red-600 p-8">
-            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-400 mb-6 tracking-wider">
+          <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border-4 border-red-600 p-4 md:p-8">
+            <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-400 mb-6 tracking-wider">
               {customerInfo ? 'CONFIRMA TU COMPRA' : 'ACCESO REQUERIDO'}
             </h2>
 
@@ -332,18 +332,18 @@ export default function BookingPage() {
                   type="button"
                   onClick={handleContinue}
                   disabled={submitting || selectedSeats.length === 0}
-                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 disabled:from-gray-700 disabled:to-gray-800 text-white font-black text-xl py-5 rounded-xl transition-all duration-300 shadow-2xl shadow-red-500/50 disabled:shadow-none"
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 disabled:from-gray-700 disabled:to-gray-800 text-white font-black text-base md:text-xl py-4 md:py-5 rounded-xl transition-all duration-300 shadow-2xl shadow-red-500/50 disabled:shadow-none"
                 >
                   {submitting ? 'PROCESANDO...' : 'CONTINUAR AL PAGO'}
                 </button>
               </div>
             ) : (
               <div className="space-y-5">
-                <p className="text-gray-300 text-lg">
+                <p className="text-gray-300 text-base md:text-lg">
                   Para comprar entradas ahora necesitas iniciar sesión como cliente. Así podremos guardar tu historial de compras y habilitar tus valoraciones cuando hayas visto la película.
                 </p>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4">
                   <button
                     type="button"
                     onClick={redirectToLogin}

@@ -53,9 +53,8 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Card Number - Cinema Style */}
       <div>
-        <label className="block text-yellow-400 font-black text-sm mb-2 tracking-wider">
+        <label className="block text-yellow-300 font-bold text-sm mb-2 tracking-wide">
           NÚMERO DE TARJETA *
         </label>
         <div className="relative">
@@ -65,7 +64,7 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
             maxLength={19}
             value={formData.cardNumber}
             onChange={(e) => setFormData({ ...formData, cardNumber: formatCardNumber(e.target.value) })}
-            className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white font-mono text-lg focus:outline-none focus:border-red-500 transition-colors pr-14"
+            className="w-full px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white font-mono text-lg focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition pr-14"
             placeholder="1234 5678 9012 3456"
           />
           <div className="absolute right-3 top-3 text-gray-500">
@@ -76,9 +75,8 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
         </div>
       </div>
 
-      {/* Cardholder Name */}
       <div>
-        <label className="block text-yellow-400 font-black text-sm mb-2 tracking-wider">
+        <label className="block text-yellow-300 font-bold text-sm mb-2 tracking-wide">
           NOMBRE DEL TITULAR *
         </label>
         <input
@@ -86,15 +84,14 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
           required
           value={formData.cardholderName}
           onChange={(e) => setFormData({ ...formData, cardholderName: e.target.value.toUpperCase() })}
-          className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white font-semibold focus:outline-none focus:border-red-500 transition-colors uppercase"
+          className="w-full px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white font-semibold focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition uppercase"
           placeholder="JUAN PÉREZ"
         />
       </div>
 
-      {/* Expiry Date and CVV */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-yellow-400 font-black text-sm mb-2 tracking-wider">
+          <label className="block text-yellow-300 font-bold text-sm mb-2 tracking-wide">
             FECHA DE EXPIRACIÓN *
           </label>
           <input
@@ -103,13 +100,13 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
             maxLength={5}
             value={formData.expiryDate}
             onChange={(e) => setFormData({ ...formData, expiryDate: formatExpiryDate(e.target.value) })}
-            className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white font-mono text-lg focus:outline-none focus:border-red-500 transition-colors"
+            className="w-full px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white font-mono text-lg focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition"
             placeholder="MM/AA"
           />
         </div>
 
         <div>
-          <label className="block text-yellow-400 font-black text-sm mb-2 tracking-wider">
+          <label className="block text-yellow-300 font-bold text-sm mb-2 tracking-wide">
             CVV *
           </label>
           <input
@@ -118,28 +115,26 @@ export default function PaymentForm({ totalAmount, onSubmit, isSubmitting }: Pay
             maxLength={3}
             value={formData.cvv}
             onChange={(e) => setFormData({ ...formData, cvv: e.target.value.replace(/\D/g, '') })}
-            className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white font-mono text-lg focus:outline-none focus:border-red-500 transition-colors"
+            className="w-full px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white font-mono text-lg focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition"
             placeholder="123"
           />
         </div>
       </div>
 
-      {/* Demo Notice - Cinema Style */}
-      <div className="bg-yellow-500/10 border-2 border-yellow-500/30 rounded-lg p-4 flex items-start gap-3">
+      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-start gap-3">
         <svg className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
         </svg>
         <div className="text-sm text-yellow-400">
-          <p className="font-bold mb-1 tracking-wider">MODO DEMO</p>
+          <p className="font-bold mb-1 tracking-wide">MODO DEMO</p>
           <p className="text-gray-400">Esto es una demostración. Tu información de pago no se almacena ni procesa.</p>
         </div>
       </div>
 
-      {/* Submit Button - Cinema CTA */}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-700 disabled:to-gray-800 text-white font-black text-xl py-5 rounded-xl transition-all duration-300 shadow-2xl shadow-green-500/50 disabled:shadow-none transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+        className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:from-gray-700 disabled:to-gray-800 text-white font-black text-lg py-4 rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/30 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-3"
       >
         {isSubmitting ? (
           <>

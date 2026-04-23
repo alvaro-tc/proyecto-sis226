@@ -12,6 +12,8 @@ const Payment = require('./models/Payment');
 const Ticket = require('./models/Ticket');
 const User = require('./models/User');
 const Review = require('./models/Review');
+const SnackCategory = require('./models/SnackCategory');
+const SnackProduct = require('./models/SnackProduct');
 const { refreshMovieReviewStats } = require('./utils/movieRatings');
 const { generateTicketCode } = require('./utils/tickets');
 
@@ -32,6 +34,8 @@ const seedDatabase = async () => {
     await Ticket.deleteMany({});
     await Review.deleteMany({});
     await User.deleteMany({});
+    await SnackCategory.deleteMany({});
+    await SnackProduct.deleteMany({});
     console.log('Cleared existing data');
 
     // INSERT CUSTOMERS (3 records)
@@ -39,18 +43,27 @@ const seedDatabase = async () => {
       {
         Name: 'Ahmet',
         Surname: 'Yilmaz',
+        CI: '1234567890',
+        Gender: 'Male',
+        Age: 30,
         Email: 'ahmet@email.com',
         PhoneNumber: '5551234567'
       },
       {
         Name: 'Ayse',
         Surname: 'Kaya',
+        CI: '0987654321',
+        Gender: 'Female',
+        Age: 25,
         Email: 'ayse@email.com',
         PhoneNumber: '5559876543'
       },
       {
         Name: 'Mehmet',
         Surname: 'Demir',
+        CI: '1122334455',
+        Gender: 'Male',
+        Age: 35,
         Email: 'mehmet@email.com',
         PhoneNumber: '5555555555'
       }
@@ -90,7 +103,7 @@ const seedDatabase = async () => {
       {
         Username: 'cajero',
         Email: 'cajero@cinebook.local',
-        PasswordHash: await bcrypt.hash('cajero123', 10),
+        PasswordHash: await bcrypt.hash('cajero', 10),
         Role: 'CAJERO'
       }
     ]);
@@ -419,6 +432,44 @@ const seedDatabase = async () => {
     await refreshMovieReviewStats(movies[0]._id);
     await refreshMovieReviewStats(movies[1]._id);
 
+    // ─── SNACK CATEGORIES ─────────────────────────────────
+    const snackCategories = await SnackCategory.insertMany([
+      { Name: 'Bebidas', Description: 'Refrescos, jugos y agua', IsActive: true },
+      { Name: 'Palomitas', Description: 'Palomitas de maíz en distintos sabores y tamaños', IsActive: true },
+      { Name: 'Dulces', Description: 'Chocolates, gomitas y caramelos', IsActive: true },
+      { Name: 'Nachos y Snacks', Description: 'Nachos, papas y botanas saladas', IsActive: true },
+      { Name: 'Combos', Description: 'Combos especiales para dos o más personas', IsActive: true }
+    ]);
+    console.log('Seeded snack categories:', snackCategories.length);
+
+    const [bebidas, palomitas, dulces, nachos, combos] = snackCategories;
+
+    const snackProducts = await SnackProduct.insertMany([
+      // Bebidas
+      { Name: 'Coca-Cola 600ml', Description: 'Refresco clásico helado', Category: bebidas._id, Price: 45, Stock: 100, IsActive: true },
+      { Name: 'Agua Natural 600ml', Description: 'Agua purificada fría', Category: bebidas._id, Price: 25, Stock: 80, IsActive: true },
+      { Name: 'Jugo de Naranja', Description: 'Jugo natural 355ml', Category: bebidas._id, Price: 35, Stock: 60, IsActive: true },
+      { Name: 'Pepsi 600ml', Description: 'Refresco cola 600ml', Category: bebidas._id, Price: 40, Stock: 90, IsActive: true },
+      // Palomitas
+      { Name: 'Palomitas Chicas', Description: 'Palomitas de mantequilla tamaño chico', Category: palomitas._id, Price: 55, Stock: 50, IsActive: true },
+      { Name: 'Palomitas Medianas', Description: 'Palomitas de mantequilla tamaño mediano', Category: palomitas._id, Price: 75, Stock: 50, IsActive: true },
+      { Name: 'Palomitas Grandes', Description: 'Palomitas de mantequilla tamaño grande', Category: palomitas._id, Price: 95, Stock: 40, IsActive: true },
+      { Name: 'Palomitas Caramelo', Description: 'Palomitas dulces de caramelo', Category: palomitas._id, Price: 85, Stock: 30, IsActive: true },
+      // Dulces
+      { Name: 'Chocolate M&Ms', Description: 'Chocolates de colores 200g', Category: dulces._id, Price: 50, Stock: 70, IsActive: true },
+      { Name: 'Gomitas Ositos', Description: 'Gomitas multicolor 150g', Category: dulces._id, Price: 35, Stock: 60, IsActive: true },
+      { Name: 'Snickers', Description: 'Barra de chocolate con cacahuate', Category: dulces._id, Price: 30, Stock: 80, IsActive: true },
+      // Nachos
+      { Name: 'Nachos con Queso', Description: 'Nachos con salsa de queso caliente', Category: nachos._id, Price: 75, Stock: 40, IsActive: true },
+      { Name: 'Papas Fritas', Description: 'Papas fritas crujientes saladas', Category: nachos._id, Price: 45, Stock: 50, IsActive: true },
+      { Name: 'Hot Dogs', Description: 'Salchicha en pan con salsas', Category: nachos._id, Price: 65, Stock: 35, IsActive: true },
+      // Combos
+      { Name: 'Combo Pareja', Description: 'Palomitas grandes + 2 refrescos medianos', Category: combos._id, Price: 160, Stock: 25, IsActive: true },
+      { Name: 'Combo Familiar', Description: 'Palomitas XL + 4 refrescos + nachos', Category: combos._id, Price: 280, Stock: 20, IsActive: true },
+      { Name: 'Combo Personal', Description: 'Palomitas medianas + refresco', Category: combos._id, Price: 110, Stock: 30, IsActive: true }
+    ]);
+    console.log('Seeded snack products:', snackProducts.length);
+
     console.log('\n✅ Database seeded successfully!');
     console.log('-----------------------------------');
     console.log(`Customers: ${customers.length}`);
@@ -430,9 +481,11 @@ const seedDatabase = async () => {
     console.log(`Payments: ${payments.length}`);
     console.log(`Tickets: ${tickets.length}`);
     console.log(`Reviews: ${reviews.length}`);
+    console.log(`Snack categories: ${snackCategories.length}`);
+    console.log(`Snack products: ${snackProducts.length}`);
     console.log('Admin login: demo / demo');
-    console.log('Cajero login: cajero / cajero123');
-    console.log('Customer login example: ahmet@email.com / demo123');
+    console.log('Cajero login: cajero / cajero');
+    console.log('Customer login: ahmet / demo123');
 
     process.exit(0);
   } catch (error) {

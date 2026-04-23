@@ -108,14 +108,9 @@ function requireRole(...roles) {
 }
 
 function isOwnerOrAdmin(customerId, req) {
-  if (!req.user) {
-    return false;
-  }
-
-  if (req.user.Role === 'ADMIN' || req.user.Role === 'CAJERO') {
-    return true;
-  }
-
+  if (!req.user) return false;
+  if (req.user.Role === 'ADMIN' || req.user.Role === 'CAJERO') return true;
+  if (!customerId) return false;
   return req.user.CustomerID && req.user.CustomerID._id.toString() === customerId.toString();
 }
 

@@ -4,7 +4,8 @@ const reservationSchema = new mongoose.Schema({
   CustomerID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
-    required: true
+    required: false,
+    default: null
   },
   SessionID: {
     type: mongoose.Schema.Types.ObjectId,

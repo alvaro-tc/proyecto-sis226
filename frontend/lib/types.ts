@@ -107,5 +107,5 @@ export interface Review {
 export interface User {
   _id: string;
   Username: string;
-  Role: 'admin' | 'cajero' | 'cliente';
+  Role: 'ADMIN' | 'CAJERO' | 'CUSTOMER';
 }

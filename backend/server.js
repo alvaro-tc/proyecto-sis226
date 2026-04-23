@@ -27,6 +27,8 @@ const seatsRouter = require('./routes/seats');
 const paymentsRouter = require('./routes/payments');
 const ticketsRouter = require('./routes/tickets');
 const reviewsRouter = require('./routes/reviews');
+const snacksRouter = require('./routes/snacks');
+const posRouter = require('./routes/pos');
 
 // Use routes
 app.use('/api/auth', authRouter);
@@ -40,6 +42,8 @@ app.use('/api/seats', seatsRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/tickets', ticketsRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/snacks', snacksRouter);
+app.use('/api/pos', posRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

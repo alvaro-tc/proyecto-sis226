@@ -64,5 +64,16 @@ const movieSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+// Lógica para evitar datos huérfanos (HU-Catálogo)
+movieSchema.pre('findOneAndDelete', async function(next) {
+  const movie = await this.model.findOne(this.getQuery());
+  if (movie) {
+    // Elimina todas las sesiones de esta película
+    await mongoose.model('MovieSession').deleteMany({ MovieID: movie._id });
+    // Nota: Las reservas y tickets dependen de la sesión, 
+    // podrías extender esto a los otros modelos.
+  }
+  next();
+});
 
 module.exports = mongoose.model('Movie', movieSchema);
