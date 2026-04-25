@@ -19,6 +19,9 @@ export default function MovieDetailPage() {
   const params = useParams();
   const movieId = params.id as string;
 
+  // ESTADO PARA EVITAR ERROR DE HYDRATION
+  const [isMounted, setIsMounted] = useState(false);
+  
   const [movie, setMovie] = useState<Movie | null>(null);
   const [sessions, setSessions] = useState<MovieSession[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
